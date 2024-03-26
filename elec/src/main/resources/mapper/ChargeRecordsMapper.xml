@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sad.web.dao.system.ChargeRecordsDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sad.web.entity.ChargeRecords">
+        <id column="RECORDS_ID" property="recordsId"/>
+        <result column="CREATE_BY" property="createBy"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="UPDATE_BY" property="updateBy"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="PILE_CODE" property="pileCode"/>
+        <result column="CAR_NUMBER" property="carNumber"/>
+        <result column="CAR_TYPE" property="carType"/>
+        <result column="BEGIN_TIME" property="beginTime"/>
+        <result column="END_TIME" property="endTime"/>
+        <result column="DEL_FLAG" property="delFlag"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        CREATE_BY
+        ,
+        CREATE_TIME,
+        UPDATE_BY,
+        UPDATE_TIME,
+        RECORDS_ID, PILE_ID, CAR_NUMBER, BEGIN_TIME, END_TIME, DEL_FLAG
+    </sql>
+    <sql id="selectChargeRecordsVo">
+        select a.RECORDS_ID,
+               a.PILE_CODE,
+               a.CAR_NUMBER,
+               a.CAR_TYPE,
+               a.BEGIN_TIME,
+               a.END_TIME,
+               a.CREATE_BY,
+               a.CREATE_TIME,
+               a.UPDATE_BY,
+               a.UPDATE_TIME,
+               a.DEL_FLAG
+        from e_charge_records a
+    </sql>
+
+    <select id="selectChargeRecordsList" parameterType="ChargeRecords" resultMap="BaseResultMap">
+        <include refid="selectChargeRecordsVo"/>
+        <where>
+            DEL_FLAG='0'
+
+            <if test="records.pileCode != null  and records.pileCode != ''">and PILE_CODE
+                like '%'||#{records.pileCode}||'%'
+            </if>
+            <if test="records.carNumber != null  and records.carNumber != ''">and CAR_NUMBER like
+                '%'||#{records.carNumber}||'%'
+            </if>
+            <if test="records.carType != null  and records.carType != ''">and CAR_TYPE = #{records.carType}</if>
+            <if test="records.beginTime != null ">and BEGIN_TIME = #{records.beginTime}</if>
+            <if test="records.endTime != null ">and END_TIME = #{records.endTime}</if>
+            <if test="records.createBy != null  and records.createBy != ''">and CREATE_BY = #{records.createBy}</if>
+            <if test="records.createTime != null ">and CREATE_TIME = #{records.createTime}</if>
+            <if test="records.updateBy != null  and records.updateBy != ''">and UPDATE_BY = #{records.updateBy}</if>
+            <if test="records.updateTime != null ">and UPDATE_TIME = #{records.updateTime}</if>
+        </where>
+        order by a.CREATE_TIME desc
+    </select>
+
+    <select id="selectChargeRecordsByRecordsId" parameterType="String" resultMap="BaseResultMap">
+        <include refid="selectChargeRecordsVo"/>
+        where RECORDS_ID = #{recordsId}
+    </select>
+
+    <insert id="insertChargeRecords" parameterType="ChargeRecords">
+        insert into e_charge_records
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="recordsId != null">RECORDS_ID,</if>
+            <if test="pileCode != null">PILE_CODE,</if>
+            <if test="carNumber != null">CAR_NUMBER,</if>
+            <if test="carType != null">CAR_TYPE,</if>
+            <if test="beginTime != null">BEGIN_TIME,</if>
+            <if test="endTime != null">END_TIME,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+            <if test="chargeEarn!=null">CHARGE_EARN,</if>
+            <if test="delFlag != null">DEL_FLAG,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="recordsId != null">#{recordsId},</if>
+            <if test="pileCode != null">#{pileCode},</if>
+            <if test="carNumber != null">#{carNumber},</if>
+            <if test="carType != null">#{carType},</if>
+            <if test="beginTime != null">#{beginTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="chargeEarn!=null">#{chargeEarn},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+
+        </trim>
+    </insert>
+
+    <update id="updateChargeRecords" parameterType="ChargeRecords">
+        update e_charge_records
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pileCode != null">PILE_CODE = #{pileCode},</if>
+            <if test="carType != null">CAR_TYPE = #{carType},</if>
+            <if test="carNumber != null">CAR_NUMBER = #{carNumber},</if>
+            <if test="beginTime != null">BEGIN_TIME = #{beginTime},</if>
+            <if test="endTime != null">END_TIME = #{endTime},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+            <if test="chargeEarn!=null">CHARGE_EARN = #{chargeEarn},</if>
+            <if test="delFlag != null">DEL_FLAG = #{delFlag},</if>
+        </trim>
+        where RECORDS_ID = #{recordsId}
+    </update>
+
+
+    <delete id="deleteChargeRecordsByRecordsIds" parameterType="String">
+        update e_charge_records set DEL_FLAG='1' where RECORDS_ID in
+        <foreach item="recordsId" collection="array" open="(" separator="," close=")">
+            #{recordsId}
+        </foreach>
+    </delete>
+
+
+    <select id="getChargeRecordsList" parameterType="ChargeRecords" resultMap="BaseResultMap">
+        <include refid="selectChargeRecordsVo"/>
+        <where>
+            DEL_FLAG='0'
+            <if test="records.pileCode != null  and records.pileCode != ''">and PILE_CODE
+                like '%'||#{records.pileCode}||'%'
+            </if>
+            <if test="records.carNumber != null  and records.carNumber != ''">and CAR_NUMBER like
+                '%'||#{records.carNumber}||'%'
+            </if>
+            <if test="records.carType != null  and records.carType != ''">and CAR_TYPE = #{records.carType}</if>
+            <if test="records.beginTime != null ">and BEGIN_TIME = #{records.beginTime}</if>
+            <if test="records.endTime != null ">and END_TIME = #{records.endTime}</if>
+            <if test="records.createBy != null  and records.createBy != ''">and CREATE_BY = #{records.createBy}</if>
+            <if test="records.createTime != null ">and CREATE_TIME = #{records.createTime}</if>
+            <if test="records.updateBy != null  and records.updateBy != ''">and UPDATE_BY = #{records.updateBy}</if>
+            <if test="records.updateTime != null ">and UPDATE_TIME = #{records.updateTime}</if>
+        </where>
+        order by a.CREATE_TIME desc
+    </select>
+
+    <select id="getRecordsNum" resultType="commonCountVo">
+        SELECT date_range as name, COUNT(*) as value,sum(CHARGE_EARN) as dValue
+        FROM (SELECT BEGIN_TIME,
+            CASE
+            WHEN TRUNC(BEGIN_TIME) = TRUNC(SYSDATE) THEN '0'
+            ELSE '1'
+            END AS date_range, CHARGE_EARN
+            FROM E_CHARGE_RECORDS WHERE DEL_FLAG='0')
+        GROUP BY date_range
+    </select>
+    <select id="getRank" resultType="dCommonCountVo">
+        SELECT a.DISTRICT AS name,
+               NVL(b.value, 0)AS value
+        FROM
+            E_JILIN a
+            LEFT JOIN (
+            SELECT
+            SUM ( CHARGE_EARN ) AS value,
+            d.DISTRICT
+            FROM
+            E_CHARGE_RECORDS c
+            LEFT JOIN E_CHARGE_PILE d ON d.PILE_CODE = c.PILE_CODE
+            WHERE
+            c.DEL_FLAG = '0'
+            GROUP BY
+            d.DISTRICT
+            ) b
+        ON a.DISTRICT = b.DISTRICT
+    </select>
+
+    <select id="getBarChart" resultType="commonCountVo">
+        SELECT count(*) AS value,
+	    CAR_TYPE AS name,
+		TRUNC( BEGIN_TIME ) as dateTime
+        FROM
+            E_CHARGE_RECORDS
+        WHERE
+            DEL_FLAG = '0'
+          AND
+            BEGIN_TIME>= SYSDATE - INTERVAL '7' DAY
+        GROUP BY
+            CAR_TYPE,
+            TRUNC( BEGIN_TIME )
+    </select>
+
+    <select id="getLineChart" resultType="commonCountVo">
+        SELECT sum(CHARGE_EARN) AS value,
+    TRUNC( BEGIN_TIME ) AS dateTime
+        FROM
+            E_CHARGE_RECORDS
+        WHERE
+            DEL_FLAG = '0'
+          AND BEGIN_TIME >= SYSDATE - INTERVAL '7' DAY
+        GROUP BY
+            TRUNC( BEGIN_TIME )
+    </select>
+
+
+</mapper>

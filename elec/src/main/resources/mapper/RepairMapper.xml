@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sad.web.dao.RepairDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sad.web.entity.Repair">
+        <id column="REPAIR_ID" property="repairId"/>
+        <result column="CREATE_BY" property="createBy"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="UPDATE_BY" property="updateBy"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="REPORT_ID" property="reportId"/>
+        <result column="REPAIR_DESCRIPTION" property="repairDescription"/>
+        <result column="REPAIR_NAME" property="repairName"/>
+        <result column="REPORT_NAME" property="reportName"/>
+        <result column="REPAIR_TIME" property="repairTime"/>
+        <result column="REPORT_TIME" property="reportTime"/>
+        <result column="FAULT_TYPE" property="faultType"/>
+        <result column="PILE_CODE" property="pileCode"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        CREATE_BY
+        ,
+        CREATE_TIME,
+        UPDATE_BY,
+        UPDATE_TIME,
+        REPAIR_ID, REPORT_ID, REPAIR_DESCRIPTION
+    </sql>
+
+
+    <sql id="selectRepairVo">
+        select PILE_CODE,
+               FAULT_TYPE,
+               REPAIR_ID,
+               REPORT_ID,
+               REPAIR_DESCRIPTION,
+               CREATE_BY,
+               REPORT_TIME,
+               REPORT_NAME,
+               REPAIR_TIME,
+               REPAIR_NAME
+        from REPAIR_VIEW
+    </sql>
+
+    <select id="selectRepairList" parameterType="Repair" resultMap="BaseResultMap">
+        <include refid="selectRepairVo"/>
+        <where>
+            <if test="repair.pileCode != null  and repair.pileCode != ''">and PILE_CODE = #{repair.pileCode}</if>
+            <if test="repair.repairName != null  and repair.repairName != ''">and REPAIR_NAME like
+                '%'||#{repair.repairName}||'%'
+            </if>
+            <if test="repair.reportName != null  and repair.reportName != ''">and REPORT_NAME like
+                '%'||#{repair.reportName}||'%'
+            </if>
+
+            <!--            <if test="repair.reportId != null  and repair.reportId != ''">and REPORT_ID = #{repair.reportId}</if>-->
+            <!--            <if test="repair.repairDescription != null  and repair.repairDescription != ''">and REPAIR_DESCRIPTION =-->
+            <!--                #{repair.repairDescription}-->
+            <!--            </if>-->
+            <!--            <if test="repair.createBy != null  and repair.createBy != ''">and CREATE_BY = #{repair.createBy}</if>-->
+            <!--            <if test="repair.createTime != null ">and CREATE_TIME = #{repair.createTime}</if>-->
+            <!--            <if test="repair.updateBy != null  and repair.updateBy != ''">and UPDATE_BY = #{repair.updateBy}</if>-->
+            <!--            <if test="repair.updateTime != null ">and UPDATE_TIME = #{repair.updateTime}</if>-->
+        </where>
+    </select>
+
+    <select id="selectRepairByRepairId" parameterType="String" resultMap="BaseResultMap">
+        <include refid="selectRepairVo"/>
+        where REPAIR_ID = #{repairId}
+    </select>
+
+    <insert id="insertRepair" parameterType="Repair">
+        insert into e_repair
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="repairId != null">REPAIR_ID,</if>
+            <if test="reportId != null">REPORT_ID,</if>
+            <if test="repairDescription != null">REPAIR_DESCRIPTION,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="repairId != null">#{repairId},</if>
+            <if test="reportId != null">#{reportId},</if>
+            <if test="repairDescription != null">#{repairDescription},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <insert id="addRepair" parameterType="Repair">
+        {call ADD_REPAIR(
+                #{repairId,mode=IN}, #{reportId,mode=IN}, #{repairDescription,mode=IN}, #{createBy,mode=IN},
+                #{createTime,mode=IN})}
+    </insert>
+
+    <update id="updateRepair" parameterType="Repair">
+        update e_repair
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="reportId != null">REPORT_ID = #{reportId},</if>
+            <if test="repairDescription != null">REPAIR_DESCRIPTION = #{repairDescription},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+        </trim>
+        where REPAIR_ID = #{repairId}
+    </update>
+
+
+    <delete id="deleteRepairByRepairIds" parameterType="String">
+        delete from e_repair where REPAIR_ID in
+        <foreach item="repairId" collection="array" open="(" separator="," close=")">
+            #{repairId}
+        </foreach>
+    </delete>
+
+    <select id="getRepairList" parameterType="Repair" resultMap="BaseResultMap">
+        <include refid="selectRepairVo"/>
+        <where>
+            <if test="pileCode != null  and pileCode != ''">and PILE_CODE = #{pileCode}</if>
+            <if test="repairName != null  and repairName != ''">and REPAIR_NAME like '%'||#{repairName}||'%'</if>
+            <if test="reportName != null  and reportName != ''">and REPORT_NAME like '%'||#{reportName}||'%'</if>
+
+        </where>
+    </select>
+
+
+</mapper>

@@ -1,0 +1,23 @@
+{
+  "id": "4280845",
+  "name": "element-ui-icon",
+  "font_family": "iconfont",
+  "css_prefix_text": "el-icon-ali-",
+  "description": "导入element-ui第三方的icon",
+  "glyphs": [
+    {
+      "icon_id": "4902257",
+      "name": "label-cat",
+      "font_class": "label-cat",
+      "unicode": "e687",
+      "unicode_decimal": 59015
+    },
+    {
+      "icon_id": "3016277",
+      "name": "cat",
+      "font_class": "cat-in-black-silhoue",
+      "unicode": "e65d",
+      "unicode_decimal": 58973
+    }
+  ]
+}

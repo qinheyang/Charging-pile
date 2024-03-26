@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sad.web.dao.ReportDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sad.web.entity.Report">
+        <id column="REPORT_ID" property="reportId"/>
+        <result column="CREATE_BY" property="createBy"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="UPDATE_BY" property="updateBy"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="FAULT_TYPE" property="faultType"/>
+        <result column="REPAIRED" property="repaired"/>
+        <result column="FAULT_DESCRIPTION" property="faultDescription"/>
+        <result column="PILE_CODE" property="pileCode"/>
+        <result column="DEL_FLAG" property="delFlag"/>
+        <result column="NICK_NAME" property="nickName"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        CREATE_BY
+        ,
+        CREATE_TIME,
+        UPDATE_BY,
+        UPDATE_TIME,
+        REPORT_ID, FAULT_TYPE, REPAIRED, FAULT_DESCRIPTION, PILE_CODE, DEL_FLAG
+    </sql>
+
+
+    <sql id="selectReportVo">
+        select a.REPORT_ID,
+               a.FAULT_TYPE,
+               a.PILE_CODE,
+               a.REPAIRED,
+               a.CREATE_BY,
+               a.CREATE_TIME,
+               a.UPDATE_BY,
+               a.UPDATE_TIME,
+               a.DEL_FLAG,
+               b.NICK_NAME,
+               a.FAULT_DESCRIPTION
+        from e_report a
+                 left join sys_user b on a.CREATE_BY = b.USER_NAME
+    </sql>
+
+    <select id="selectReportList" parameterType="Report" resultMap="BaseResultMap">
+        <include refid="selectReportVo"/>
+        <where>
+            a.DEL_FLAG='0'
+            <if test=" report.faultType != null  and report.faultType != ''">and a.FAULT_TYPE = #{report.faultType}</if>
+            <if test="report.repaired != null  and report.repaired != ''">and a.REPAIRED = #{report.repaired}</if>
+            <if test="report.faultDescription != null  and report.faultDescription != ''">and a.FAULT_DESCRIPTION =
+                #{report.faultDescription}
+            </if>
+            <if test="report.pileCode != null  and report.pileCode != ''">and a.PILE_CODE like
+                '%'||#{report.pileCode}||'%'
+            </if>
+            <if test="report.createBy != null  and report.createBy != ''">and a.CREATE_BY = #{report.createBy}</if>
+            <if test="report.createTime != null ">and a.CREATE_TIME = #{createTime}</if>
+            <if test="report.updateBy != null  and report.updateBy != ''">and a.UPDATE_BY = #{report.updateBy}</if>
+            <if test="report.updateTime != null ">and a.UPDATE_TIME = #{updateTime}</if>
+            <if test="report.delFlag != null  and report.delFlag != ''">and a.DEL_FLAG = #{report.delFlag}</if>
+            <if test="report.nickName != null  and report.nickName != ''">and b.NICK_NAME like
+                '%'||#{report.nickName}||'%'
+            </if>
+        </where>
+        order by a.CREATE_TIME desc
+    </select>
+
+    <select id="selectReportByReportId" parameterType="String" resultMap="BaseResultMap">
+        <include refid="selectReportVo"/>
+        where REPORT_ID = #{reportId}
+    </select>
+
+    <insert id="insertReport" parameterType="Report">
+        insert into e_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reportId != null">REPORT_ID,</if>
+            <if test="faultType != null">FAULT_TYPE,</if>
+            <if test="repaired != null">REPAIRED,</if>
+            <if test="faultDescription != null">FAULT_DESCRIPTION,</if>
+            <if test="pileCode != null">PILE_CODE,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+            <if test="delFlag != null">DEL_FLAG,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reportId != null">#{reportId},</if>
+            <if test="faultType != null">#{faultType},</if>
+            <if test="repaired != null">#{repaired},</if>
+            <if test="faultDescription != null">#{faultDescription},</if>
+            <if test="pileCode != null">#{pileCode},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateReport" parameterType="Report">
+        update e_report
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="faultType != null">FAULT_TYPE = #{faultType},</if>
+            <if test="repaired != null">REPAIRED = #{repaired},</if>
+            <if test="faultDescription != null">FAULT_DESCRIPTION = #{faultDescription},</if>
+            <if test="pileCode != null">PILE_CODE = #{pileCode},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+            <if test="delFlag != null">DEL_FLAG = #{delFlag},</if>
+        </trim>
+        where REPORT_ID = #{reportId}
+    </update>
+
+    <delete id="deleteReportByReportId" parameterType="String">
+        delete
+        from e_report
+        where REPORT_ID = #{reportId}
+    </delete>
+
+    <delete id="deleteReportByReportIds" parameterType="String">
+        update e_report set DEL_FLAG='1' where REPORT_ID in
+        <foreach item="reportId" collection="array" open="(" separator="," close=")">
+            #{reportId}
+        </foreach>
+    </delete>
+
+
+    <select id="getReportList" parameterType="Report" resultMap="BaseResultMap">
+        <include refid="selectReportVo"/>
+        <where>
+            a.DEL_FLAG='0'
+            <if test=" report.faultType != null  and report.faultType != ''">and a.FAULT_TYPE = #{report.faultType}</if>
+            <if test="report.repaired != null  and report.repaired != ''">and a.REPAIRED = #{report.repaired}</if>
+            <if test="report.faultDescription != null  and report.faultDescription != ''">and a.FAULT_DESCRIPTION =
+                #{report.faultDescription}
+            </if>
+            <if test="report.pileCode != null  and report.pileCode != ''">and a.PILE_CODE like
+                '%'||#{report.pileCode}||'%'
+            </if>
+            <if test="report.createBy != null  and report.createBy != ''">and a.CREATE_BY = #{report.createBy}</if>
+            <if test="report.createTime != null ">and a.CREATE_TIME = #{createTime}</if>
+            <if test="report.updateBy != null  and report.updateBy != ''">and a.UPDATE_BY = #{report.updateBy}</if>
+            <if test="report.updateTime != null ">and a.UPDATE_TIME = #{updateTime}</if>
+            <if test="report.delFlag != null  and report.delFlag != ''">and a.DEL_FLAG = #{report.delFlag}</if>
+            <if test="report.nickName != null  and report.nickName != ''">and b.NICK_NAME like
+                '%'||#{report.nickName}||'%'
+            </if>
+        </where>
+        order by a.CREATE_TIME desc
+    </select>
+
+</mapper>

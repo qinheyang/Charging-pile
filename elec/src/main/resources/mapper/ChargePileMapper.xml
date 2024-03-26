@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sad.web.dao.system.ChargePileDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sad.web.entity.ChargePile">
+        <id column="PILE_ID" property="pileId"/>
+        <result column="CREATE_BY" property="createBy"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="UPDATE_BY" property="updateBy"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="PILE_CODE" property="pileCode"/>
+        <result column="LATITUDE" property="latitude"/>
+        <result column="LONGITUDE" property="longitude"/>
+        <result column="DISTRICT" property="district"/>
+        <result column="SPEED" property="speed"/>
+        <result column="PILE_STATE" property="pileState"/>
+        <result column="REQUIREMENT" property="requirement"/>
+        <result column="PRICE" property="price"/>
+        <result column="INSTALL_TIME" property="installTime"/>
+        <result column="MAINTENANCE_TIME" property="maintenanceTime"/>
+        <result column="MAINTENANCE_CYCLE" property="maintenanceCycle"/>
+        <result column="CHARGE_STANDARD" property="chargeStandard"/>
+        <result column="OUTPUT_POWER" property="outputPower"/>
+        <result column="DEL_FLAG" property="delFlag"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="selectEChargePileVo">
+        select PILE_ID,
+               PILE_CODE,
+               LATITUDE,
+               LONGITUDE,
+               SPEED,
+               PILE_STATE,
+               REQUIREMENT,
+               PRICE,
+               INSTALL_TIME,
+               MAINTENANCE_TIME,
+               MAINTENANCE_CYCLE,
+               CHARGE_STANDARD,
+               OUTPUT_POWER,
+               CREATE_BY,
+               CREATE_TIME,
+               UPDATE_BY,
+               UPDATE_TIME,
+               DEL_FLAG
+        from e_charge_pile
+    </sql>
+
+    <select id="selectChargePileByPileId" parameterType="String" resultMap="BaseResultMap">
+        <include refid="selectEChargePileVo"/>
+        where PILE_ID = #{pileId}
+    </select>
+
+    <!--    <select id="getList" resultMap="BaseResultMap" parameterType="ChargePile">
+            select PILE_ID,
+                   PILE_CODE,
+                   LAT,
+                   LONGITUDE,
+                   SPECIFICATION,
+                   STATE,
+                   REQUIREMENT,
+                   PRICE,
+                   INSTALL_TIME,
+                   MAINTENANCE_TIME,
+                   MAINTENANCE_CYCLE,
+                   CHARGE_STANDARD,
+                   OUTPUT_POWER
+            from E_CHARGE_PILE
+            <where>
+                <if test="pileCode != null and pileCode != ''">
+                    AND PILE_CODE like concat('%', #{configName}, '%')
+                </if>
+                <if test="state != null and state != ''">
+                    AND STATE = #{state}
+                </if>
+                <if test="params.beginTime != null and params.beginTime != ''">&lt;!&ndash; 开始时间检索 &ndash;&gt;
+                    and date_format(INSTALL_TIME,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+                </if>
+                <if test="params.endTime != null and params.endTime != ''">&lt;!&ndash; 结束时间检索 &ndash;&gt;
+                    and date_format(INSTALL_TIME,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+                </if>
+
+            </where>
+        </select>-->
+
+    <insert id="insertChargePile" parameterType="ChargePile">
+        insert into e_charge_pile
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pileId != null">PILE_ID,</if>
+            <if test="pileCode != null">PILE_CODE,</if>
+            <if test="latitude != null">LATITUDE,</if>
+            <if test="longitude != null">LONGITUDE,</if>
+            <if test="district != null">DISTRICT,</if>
+            <if test="speed != null">SPEED,</if>
+            <if test="pileState != null">PILE_STATE,</if>
+            <if test="requirement != null">REQUIREMENT,</if>
+            <if test="price != null">PRICE,</if>
+            <if test="installTime != null">INSTALL_TIME,</if>
+            <if test="maintenanceTime != null">MAINTENANCE_TIME,</if>
+            <if test="maintenanceCycle != null">MAINTENANCE_CYCLE,</if>
+            <if test="chargeStandard != null">CHARGE_STANDARD,</if>
+            <if test="outputPower != null">OUTPUT_POWER,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+            <if test="delFlag != null">DEL_FLAG,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pileId != null">#{pileId},</if>
+            <if test="pileCode != null">#{pileCode},</if>
+            <if test="latitude != null">#{latitude},</if>
+            <if test="longitude != null">#{longitude},</if>
+            <if test="district != null">#{district},</if>
+            <if test="speed != null">#{speed},</if>
+            <if test="pileState != null">#{pileState},</if>
+            <if test="requirement != null">#{requirement},</if>
+            <if test="price != null">#{price},</if>
+            <if test="installTime != null">#{installTime},</if>
+            <if test="maintenanceTime != null">#{maintenanceTime},</if>
+            <if test="maintenanceCycle != null">#{maintenanceCycle},</if>
+            <if test="chargeStandard != null">#{chargeStandard},</if>
+            <if test="outputPower != null">#{outputPower},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateChargePile" parameterType="ChargePile">
+        update e_charge_pile
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pileCode != null">PILE_CODE = #{pileCode},</if>
+            <if test="latitude != null">LATITUDE = #{latitude},</if>
+            <if test="longitude != null">LONGITUDE = #{longitude},</if>
+            <if test="district != null">DISTRICT = #{district},</if>
+            <if test="speed != null">SPEED = #{speed},</if>
+            <if test="pileState != null">PILE_STATE = #{pileState},</if>
+            <if test="requirement != null">REQUIREMENT = #{requirement},</if>
+            <if test="price != null">PRICE = #{price},</if>
+            <if test="installTime != null">INSTALL_TIME = #{installTime},</if>
+            <if test="maintenanceTime != null">MAINTENANCE_TIME = #{maintenanceTime},</if>
+            <if test="maintenanceCycle != null">MAINTENANCE_CYCLE = #{maintenanceCycle},</if>
+            <if test="chargeStandard != null">CHARGE_STANDARD = #{chargeStandard},</if>
+            <if test="outputPower != null">OUTPUT_POWER = #{outputPower},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+            <if test="delFlag != null">DEL_FLAG = #{delFlag},</if>
+        </trim>
+        where PILE_ID = #{pileId}
+    </update>
+
+
+    <delete id="deleteChargePileByPileIds" parameterType="String">
+        update e_charge_pile
+        set DEL_FLAG='1'
+        where PILE_ID in
+        <foreach item="pileId" collection="array" open="(" separator="," close=")">
+            #{pileId}
+        </foreach>
+    </delete>
+
+    <select id="selectChargePileByPileCode" parameterType="String" resultMap="BaseResultMap">
+        <include refid="selectEChargePileVo"/>
+        where PILE_CODE = #{pileCode} and del_flag='0'
+    </select>
+
+    <select id="selectChargePileByPileIds" parameterType="String" resultMap="BaseResultMap">
+        <include refid="selectEChargePileVo"/>
+        where DEL_FLAG='0' and PILE_ID in
+        <foreach item="pileId" collection="array" open="(" separator="," close=")">
+            #{pileId}
+        </foreach>
+    </select>
+
+    <select id="getPileNum" resultType="commonCountVo">
+        SELECT count(*) as value,
+            PILE_STATE as name
+        FROM
+            E_CHARGE_PILE
+        WHERE
+            DEL_FLAG = '0'
+        GROUP BY
+            PILE_STATE
+    </select>
+
+    <select id="getRingNum" resultType="commonCountVo">
+        select a.DISTRICT as name, b.NUM as value
+        FROM
+            E_JILIN a
+            LEFT JOIN
+            ( SELECT COUNT ( * ) AS num, DISTRICT FROM E_CHARGE_PILE WHERE DEL_FLAG = '0' GROUP BY DISTRICT ) b
+        ON a.DISTRICT = b.DISTRICT
+    </select>
+
+
+    <select id="getPileMap" resultMap="BaseResultMap">
+        SELECT PILE_CODE,PILE_STATE,LONGITUDE,LATITUDE FROM E_CHARGE_PILE where DEL_FLAG = '0'
+    </select>
+
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sad.web.dao.system.SysMenuDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sad.web.entity.system.SysMenu">
+        <id column="menu_id" property="menuId" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="menu_name" property="menuName" />
+        <result column="parent_id" property="parentId" />
+        <result column="path" property="path" />
+        <result column="icon" property="icon" />
+        <result column="component" property="component" />
+        <result column="menu_type" property="menuType" />
+        <result column="is_frame" property="isFrame" />
+        <result column="del_flag" property="delFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        menu_id, menu_name, parent_id, path, icon, component, menu_type, is_frame, del_flag
+    </sql>
+    <select id="getMenuListByUserId" resultType="com.sad.web.entity.system.SysMenu">
+        SELECT
+            distinct
+            m.menu_id,m.menu_name,m.component,m.path,m.parent_id,m.menu_type,m.icon
+        FROM
+            sys_menu m
+                LEFT JOIN sys_role_menu rm ON m.menu_id = rm.menu_id
+                LEFT JOIN sys_role r ON  rm.role_id = r.role_id
+                LEFT JOIN sys_user_role ur ON ur.role_id = r.role_id
+                LEFT JOIN sys_user u ON ur.user_id = u.user_id
+        where m.menu_type in ('M','C') and  u.user_id =#{userId} and m.del_flag='0'
+        and r.del_flag='0' and u.del_flag='0'
+    </select>
+    <select id="getMenuListByRoleId" resultType="com.sad.web.entity.system.SysMenu">
+        SELECT
+            m.menu_id,m.menu_name,m.component,m.path,m.parent_id,m.menu_type,m.icon
+        FROM
+            sys_menu m
+                LEFT JOIN sys_role_menu rm ON m.menu_id = rm.menu_id
+                LEFT JOIN sys_role r ON  rm.role_id = r.role_id
+        where r.role_id = #{roleId} and m.del_flag='0' and r.del_flag='0'
+    </select>
+
+
+</mapper>
